@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="./css/bulma.css">
+	<title>FFXIV Retainer Maintainer</title>
+</head>
+<body>
+<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+	<div class="navbar-brand">
+		<a class="navbar-item" href="/">
+			<img src="./img/retainermaintainer-light.svg" alt="RetainerMaintainer" height="28">
+		</a>
+	</div>
+</nav>
+<section class="section">
+	<div class="container">
+		<h1 class="title">
+			Retainer Maintainer alpha
+		</h1>
+		<p class="subtitle">
+			Discover ways to save yourself space and better organize your items.
+		</p>
+		<p>Retainer Maintainer takes all of your retainers and searches through their inventories to find split stacks of
+			stackable items or armoire-enabled gear. Hopefully, we can help save you some precious inventory slots. Currently,
+			this is a proof-of-concept/alpha - at some point I'd like to make this simpler by turning it into a full ACT
+			plugin or something.</p>
+
+	</div>
+</section>
+<section class="section">
+	<div class="container">
+		<hr>
+		<form method="post" action="process.py">
+			<input type="file">
+		</form>
+		<hr>
+	</div>
+	<div class="container">
+		<h2 class="title is-4">How to use RetainerMaintainer</h2>
+		<h3 class="title is-5">Prerequisites</h3>
+		<ul>
+			<li><a href="http://advancedcombattracker.com/">
+				"Advanced Combat Tracker</a></li>
+			<li><a href="https://github.com/ravahn/FFXIV_ACT_Plugin">FFXIV ACT plugin</a></li>
+		</ul>
+		Use of these tools, and by extension RetainerMaintainer, may be considered a violation of the FFXIV Terms of
+		Service. Use at your own risk - no warranty, express or implied, is given.
+		<h3 class="title is-5">Step-by-step</h3>
+		<p><b>Step 1:</b> Open FFXIV and position yourself near your favourite retainer <br>
+			<b>Step 2:</b> Open ACT and ensure your FFXIV plugin is set to capture network data, and that capturing network
+			data is functional. (Typically, this means running as admin)<br>
+			<b>Step 3:</b> Under Plugins > FFXIV Settings, turn on (DEBUG) Dump all Network Data to logfile<br>
+			<b>Step 4:</b> For each of your retainers, ding the bell and view all 'pages' of their inventory.<br>
+			<b>Step 5:</b> Turn off (DEBUG) Dump all Network Data<br>
+			<b>Step 6:</b> Upload the most recent log file from the log file location (click "Open FFXIV Log Folder" to bring
+			it up)<br>
+			Thanks to xivdb and their API for item name and armoire info.<br>
+			We don't store your logfiles, or use them for anything beyond what's stated on this page. We also don't use
+			cookies, display advertisements, or use any analytic tools.<br>
+			Feel free to check out the <a href="https://github.com/nivomi/RetainerMaintainer">project on github</a>, where you
+			can also submit issues and pull requests.
+		</p>
+	</div>
+</section>
+</body>
+</html>
