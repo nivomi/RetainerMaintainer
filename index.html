@@ -23,28 +23,42 @@
 			Discover ways to save yourself space and better organize your items.
 		</p>
 		<p>Retainer Maintainer takes all of your retainers and searches through their inventories to find split stacks of
-			stackable items or armoire-enabled gear. Hopefully, we can help save you some precious inventory slots. Currently,
-			this is a proof-of-concept/alpha - at some point I'd like to make this simpler by turning it into a full ACT
-			plugin or something.</p>
-
+			stackable items or armoire-enabled gear.</p>
 	</div>
-</section>
-<section class="section">
 	<div class="container">
-		<hr>
 		<form method="post" action="process.py">
-			<input type="file">
+			<div class="field">
+				<div class="file">
+					<label class="file-label">
+						<input class="file-input" type="file" name="file">
+						<span class="file-cta">
+      <span class="file-label">
+        Select your logfile.
+      </span>
+    </span>
+					</label>
+				</div>
+			</div>
+			<div class="field">
+				<p class="control">
+					<button class="button is-success">
+						Upload!
+					</button>
+				</p>
+			</div>
 		</form>
 		<hr>
 	</div>
 	<div class="container">
 		<h2 class="title is-4">How to use RetainerMaintainer</h2>
 		<h3 class="title is-5">Prerequisites</h3>
-		<ul>
-			<li><a href="http://advancedcombattracker.com/">
-				"Advanced Combat Tracker</a></li>
-			<li><a href="https://github.com/ravahn/FFXIV_ACT_Plugin">FFXIV ACT plugin</a></li>
-		</ul>
+		<div class="content">
+			<ul>
+				<li><a href="http://advancedcombattracker.com/">
+					Advanced Combat Tracker</a></li>
+				<li><a href="https://github.com/ravahn/FFXIV_ACT_Plugin">FFXIV ACT plugin</a></li>
+			</ul>
+		</div>
 		Use of these tools, and by extension RetainerMaintainer, may be considered a violation of the FFXIV Terms of
 		Service. Use at your own risk - no warranty, express or implied, is given.
 		<h3 class="title is-5">Step-by-step</h3>
@@ -56,6 +70,9 @@
 			<b>Step 5:</b> Turn off (DEBUG) Dump all Network Data<br>
 			<b>Step 6:</b> Upload the most recent log file from the log file location (click "Open FFXIV Log Folder" to bring
 			it up)<br>
+		</p>
+		<hr>
+		<p>
 			Thanks to xivdb and their API for item name and armoire info.<br>
 			We don't store your logfiles, or use them for anything beyond what's stated on this page. We also don't use
 			cookies, display advertisements, or use any analytic tools.<br>
