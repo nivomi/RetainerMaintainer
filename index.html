@@ -9,7 +9,7 @@
 <body>
 <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
 	<div class="navbar-brand">
-		<a class="navbar-item" href="/">
+		<a class="navbar-item" href="/retainermaintainer">
 			<img src="./img/retainermaintainer-light.svg" alt="RetainerMaintainer" height="28">
 		</a>
 	</div>
@@ -26,11 +26,11 @@
 			stackable items or armoire-enabled gear.</p>
 	</div>
 	<div class="container">
-		<form method="post" action="process.py">
+		<form method="post" action="process.py" enctype="multipart/form-data">
 			<div class="field">
 				<div class="file">
 					<label class="file-label">
-						<input class="file-input" type="file" name="file">
+						<input class="file-input" type="file" name="file" accept=".log">
 						<span class="file-cta">
       <span class="file-label">
         Select your logfile.
@@ -98,7 +98,9 @@
 			We don't store your logfiles, or use them for anything beyond what's stated on this page. We also don't use
 			cookies, display advertisements, or use any analytic tools.<br>
 			Feel free to check out the <a href="https://github.com/nivomi/RetainerMaintainer">project on github</a>, where you
-			can also submit issues and pull requests.
+			can also submit issues and pull requests.<br>
+			I can be reached at <a href="mailto:retainermaintainer@terribleideas.org">retainermaintainer@terribleideas.org</a>
+			if you find bugs, have questions, or anything else.
 		</p>
 	</div>
 </section>

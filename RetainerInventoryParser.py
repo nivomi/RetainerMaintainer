@@ -3,7 +3,9 @@ class RetainerInventoryParser:
     LANG_JA = "name_ja"
     LANG_DE = "name_de"
     LANG_FR = "name_fr"
-
+    NQ_VALUE = "00"
+    HQ_VALUE = "01"
+    MYSTERY_QUALITIES = ["7C"]  # peach confetti has a 'quality' of 7C for some reason. ????????
     def __init__(self, logfile, lang):
         self.lang = lang
         assert self.lang is self.LANG_DE or lang is self.LANG_EN or lang is self.LANG_FR or lang is self.LANG_JA
@@ -12,8 +14,6 @@ class RetainerInventoryParser:
         # each retainer has a name and a list of items
         # each item has an ID, a quantity, and a quality flag
         # quality flags are:
-        # 8200 - NQ
-        # 8201 - HQ
 
         self.log = logfile
         self.retainers = []
@@ -32,36 +32,41 @@ class RetainerInventoryParser:
             '\d*?\|.*?\|00000060\|[0-9A-F]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|'
             '[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|'
             '(?P<quantity>[0-9A-Fa-f]{8})\|(?P<item_id>[0-9A-Fa-f]{8})\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]'
-            '{8}\|[0-9A-Fa-f]{4}(?P<quality>[0-9A-Fa-f]{4})')
-        retainer_name_finder = re.compile('\d*\|.*\|003d\|(?P<retainer_name>.*?)\|')
+            '{8}\|[0-9A-Fa-f]{6}(?P<quality>[0-9A-Fa-f]{2})')
+        retainer_name_finder = re.compile('.*?\|.*\|003d\|(?P<retainer_name>.*?)\|')
+        reset_flag_finder = re.compile('\d*?\|.*?\|00000038\|')
         current_retainer = {"Name": "(Failed to detect name!)", "Itemlist": []}
         current_itemlist = []
-        for line in self.log:
-            if "FFXIV PLUGIN VERSION" in line:  # if ACT has been run multiple times in a day, use the latest session.
-                resettable = True  # ...unless there's no inventory data in the latest session.
+        for line in iter(self.log.split("\\n")):
             match = item_finder.match(line)
-            if match is not None:
+            if match is not None and match.group('quality') != "FF":
                 if resettable:
-                    resettable = False
-                    self.retainers = []
-                    current_retainer = {"Name": "(Failed to detect name!)", "Itemlist": []}
                     current_itemlist = []
-                if match.group('quality') == "8201":
+                    resettable = False
+                if match.group('quality') == self.HQ_VALUE:
                     is_high_quality = True
-                elif match.group('quality') == "8200":
+                elif match.group('quality') == self.NQ_VALUE:
+                    is_high_quality = False
+                elif match.group('quality') in self.MYSTERY_QUALITIES:
                     is_high_quality = False
                 else:
                     raise InvalidLogError("Anomalous item quality:" + match.group("quality"))
-                current_itemlist.append((match.group('item_id'), match.group('quantity'), is_high_quality))
+                if int(match.group('quantity'), 16) > 0:
+                    current_itemlist.append((int(match.group('item_id'), 16), int(match.group('quantity'), 16),
+                                             is_high_quality))
             else:
+                match = reset_flag_finder.match(line)
+                if match is not None:
+                    resettable = True
                 if current_itemlist:  # if we don't have an itemlist, any matches would be unrelated retainer dialog
                     match = retainer_name_finder.match(line)
                     if match is not None:
                         current_retainer['Name'] = match.group('retainer_name')
                         current_retainer['Itemlist'] = current_itemlist.copy()
-                        self.retainers.append(current_retainer)
+                        self.retainers.append(current_retainer.copy())
                         current_itemlist = []
-                        current_retainer = []
+                        current_retainer = {"Name": "(Failed to detect name!)", "Itemlist": []}
+                        resettable = False
         if current_itemlist:
             current_retainer['Name'] = "(Missing retainer name - logfile may have ended early?)"
             current_retainer['Itemlist'] = current_itemlist.copy()
@@ -81,12 +86,14 @@ class RetainerInventoryParser:
         for retainer in self.retainers:
             name = retainer['Name']
             for item in retainer['Itemlist']:
-                if int(item[0]) in armoire_capable:
+                if item[0] in armoire_capable:
                     self.armoire_alerts.append({'retainer': name, 'item': item})
-                itemid_owners.setdefault((item[0], item[2]), []).append((name, item[1]))
+                if item[0] > 20:  # ignore gil, crystals, etc
+                    itemid_owners.setdefault((item[0], item[2]), []).append((name, item[1]))
         for item_uuid, owners in itemid_owners.items():
             if len(owners) > 1:
-                if itemlist_json[item_uuid[0]]["stack_size"] > 1:
+                item_max = next(item_dict for item_dict in itemlist_json if item_dict["id"] == item_uuid[0])
+                if item_max["stack_size"] > 1:
                     self.split_stack_alerts.append((item_uuid[0], item_uuid[1], owners))
 
         for alert in self.armoire_alerts:
@@ -97,14 +104,16 @@ class RetainerInventoryParser:
         for alert in self.split_stack_alerts:
             ownerstring = ""
             for owner in alert[2]:
-                ownerstring.join("{0} (x{1}), ".format(owner[0], owner[1]))
+                ownerstring = ownerstring + ("{0} (x{1}), ".format(owner[0], owner[1]))
+            ownerstring = ownerstring.replace('\\', '')
             if alert[1]:
                 hq_string = "HQ"
             else:
                 hq_string = "NQ"
+            item_names = next(item_dict for item_dict in itemlist_json if item_dict["id"] == alert[0])
             self.error_strings.append(
                 "Item <strong>{item}({HQ})</strong> is on multiple retainers: <strong>{ownerstring}</strong>".format(
-                    item=itemlist_json[alert[1]][self.lang], HQ=hq_string, ownerstring=ownerstring))
+                    item=item_names[self.lang], HQ=hq_string, ownerstring=ownerstring))
 
 
 class InvalidLogError(Exception):

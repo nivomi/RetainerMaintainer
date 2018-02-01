@@ -22,12 +22,14 @@ if "file" in form:
             lang = RetainerInventoryParser.LANG_EN
     else:
         lang = RetainerInventoryParser.LANG_EN
-    parser = RetainerInventoryParser(form["file"].value, lang)
+    filename = str(form["file"].value)
+    parser = RetainerInventoryParser(filename, lang)
 
     stringify = ""
     if parser.error_strings:
-        for message in parser.error_strings:
-            stringify.join("<li>{0}</li>".format(message))
+        x = parser.error_strings
+        for message in x:
+            stringify = stringify + ("<li>{0}</li>".format(message))
     else:
         stringify = "<li>No optimizations found, you seem pretty organized!</li>"
     print(open("template/results.html").read().format(stringify))
