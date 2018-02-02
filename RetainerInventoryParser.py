@@ -30,16 +30,18 @@ class RetainerInventoryParser:
         resettable = False
         item_finder = re.compile(
             '\d*?\|.*?\|00000060\|[0-9A-F]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|'
-            '[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|'
-            '(?P<quantity>[0-9A-Fa-f]{8})\|(?P<item_id>[0-9A-Fa-f]{8})\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]'
-            '{8}\|[0-9A-Fa-f]{6}(?P<quality>[0-9A-Fa-f]{2})')
+            '[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|(?P<frame>[0-9A-Fa-f]{8})\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}'
+            '\|[0-9A-Fa-f]{5}(?P<quantity>[0-9A-Fa-f]{3})\|(?P<item_id>[0-9A-Fa-f]{8})\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]'
+            '{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{6}(?P<quality>[0-9A-Fa-f]{2})')
         retainer_name_finder = re.compile('.*?\|.*\|003d\|(?P<retainer_name>.*?)\|')
         reset_flag_finder = re.compile('\d*?\|.*?\|00000038\|')
         current_retainer = {"Name": "(Failed to detect name!)", "Itemlist": []}
         current_itemlist = []
         for line in iter(self.log.split("\\n")):
             match = item_finder.match(line)
-            if match is not None and match.group('quality') != "FF":
+            if match is not None and match.group('quality') != "FF" and match.group('frame') != "FFFFFFFF" \
+                    and match.group("item_id") != "00000000" and match.group('quantity') != "000" and \
+                    match.group('quality') != "08":
                 if resettable:
                     current_itemlist = []
                     resettable = False
@@ -97,10 +99,10 @@ class RetainerInventoryParser:
                 if item_max["stack_size"] > 1:
                     self.split_stack_alerts.append((owners[0][1], owners[0][2], owners))
 
-        for alert in self.armoire_alerts:
+        for alerty in self.armoire_alerts:
             self.error_strings.append("Item <strong>{item}</strong> on <strong>{retainer}</strong> can be placed in "
-                                      "the armoire.".format(retainer=alert['retainer'], item=itemlist_json[alert[
-                'item']][self.lang]))
+                                      "the armoire.".format(retainer=alerty['retainer'],
+                                                            item=itemlist_json[int(alerty['item'][0])][self.lang]))
 
         for alert in self.split_stack_alerts:
             ownerstring = ""
