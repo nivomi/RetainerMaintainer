@@ -5,9 +5,8 @@ class RetainerInventoryParser:
     LANG_FR = "name_fr"
     NQ_VALUE = "00"
     HQ_VALUE = ["01", "03"]
-    MYSTERY_QUALITIES = ["7C", "C8"]  # peach confetti has a 'quality' of 7C for some reason. ????????
+    MYSTERY_QUALITIES = ["7C"]  # peach confetti has a 'quality' of 7C for some reason. ????????
 
-    # C8 is a mystery
     def __init__(self, logfile, lang):
         self.lang = lang
         assert self.lang is self.LANG_DE or lang is self.LANG_EN or lang is self.LANG_FR or lang is self.LANG_JA
@@ -33,7 +32,8 @@ class RetainerInventoryParser:
         item_finder = re.compile(
             '\d*?\|.*?\|00000060\|[0-9A-F]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|'
             '[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}\|(?P<frame>[0-9A-Fa-f]{8})\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{8}'
-            '\|[0-9A-Fa-f]{5}(?P<quantity>[0-9A-Fa-f]{3})\|(?P<item_id>[0-9A-Fa-f]{8})\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]'
+            '\|[0-9A-Fa-f]{5}(?P<quantity>[0-9A-Fa-f]{3})\|(?P<mystery_tag>[0-9A-Fa-f]{4})(?P<item_id>[0-9A-Fa-f]{4})'
+            '\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]'
             '{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{6}(?P<quality>[0-9A-Fa-f]{2})')
         retainer_name_finder = re.compile('.*?\|.*\|003d\|(?P<retainer_name>.*?)\|')
         reset_flag_finder = re.compile('\d*?\|.*?\|00000038\|')
@@ -43,7 +43,7 @@ class RetainerInventoryParser:
             match = item_finder.match(line)
             if match is not None and match.group('quality') != "FF" and match.group('frame') != "FFFFFFFF" \
                     and match.group("item_id") != "00000000" and match.group('quantity') != "000" and \
-                    match.group('quality') != "08":
+                    match.group('quality') != "08" and match.group('mystery_tag') == "0000":
                 if resettable:
                     current_itemlist = []
                     resettable = False
