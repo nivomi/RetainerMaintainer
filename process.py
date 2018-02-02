@@ -12,11 +12,11 @@ print()  # blank line, end of headers
 form = cgi.FieldStorage()
 if "file" in form:
     if "language" in form:
-        if form["language"] == "de":
+        if form["language"].value == "de":
             lang = RetainerInventoryParser.LANG_DE
-        elif form["language"] == "ja":
+        elif form["language"].value == "ja":
             lang = RetainerInventoryParser.LANG_JA
-        elif form["language"] == "fr":
+        elif form["language"].value == "fr":
             lang = RetainerInventoryParser.LANG_FR
         else:
             lang = RetainerInventoryParser.LANG_EN

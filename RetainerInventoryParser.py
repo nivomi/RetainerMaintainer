@@ -89,12 +89,13 @@ class RetainerInventoryParser:
                 if item[0] in armoire_capable:
                     self.armoire_alerts.append({'retainer': name, 'item': item})
                 if item[0] > 20:  # ignore gil, crystals, etc
-                    itemid_owners.setdefault((item[0], item[2]), []).append((name, item[1]))
+                    tuple_id = (str(item[0]) + str(item[2]))
+                    itemid_owners.setdefault(tuple_id, []).append(((name, item[1]), item[0], item[2]))
         for item_uuid, owners in itemid_owners.items():
             if len(owners) > 1:
-                item_max = next(item_dict for item_dict in itemlist_json if item_dict["id"] == item_uuid[0])
+                item_max = next(item_dict for item_dict in itemlist_json if item_dict["id"] == owners[0][1])
                 if item_max["stack_size"] > 1:
-                    self.split_stack_alerts.append((item_uuid[0], item_uuid[1], owners))
+                    self.split_stack_alerts.append((owners[0][1], owners[0][2], owners))
 
         for alert in self.armoire_alerts:
             self.error_strings.append("Item <strong>{item}</strong> on <strong>{retainer}</strong> can be placed in "
@@ -104,7 +105,7 @@ class RetainerInventoryParser:
         for alert in self.split_stack_alerts:
             ownerstring = ""
             for owner in alert[2]:
-                ownerstring = ownerstring + ("{0} (x{1}), ".format(owner[0], owner[1]))
+                ownerstring = ownerstring + ("{0} (x{1}), ".format(owner[0][0], owner[0][1]))
             ownerstring = ownerstring.replace('\\', '')
             if alert[1]:
                 hq_string = "HQ"
