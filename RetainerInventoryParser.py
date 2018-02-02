@@ -5,7 +5,9 @@ class RetainerInventoryParser:
     LANG_FR = "name_fr"
     NQ_VALUE = "00"
     HQ_VALUE = ["01", "03"]
-    MYSTERY_QUALITIES = ["7C"]  # peach confetti has a 'quality' of 7C for some reason. ????????
+    MYSTERY_QUALITIES = ["7C", "C8"]  # peach confetti has a 'quality' of 7C for some reason. ????????
+
+    # C8 is a mystery
     def __init__(self, logfile, lang):
         self.lang = lang
         assert self.lang is self.LANG_DE or lang is self.LANG_EN or lang is self.LANG_FR or lang is self.LANG_JA
