@@ -3,7 +3,7 @@ class RetainerInventoryParser:
     LANG_JA = "name_ja"
     LANG_DE = "name_de"
     LANG_FR = "name_fr"
-    NQ_VALUE = "00"
+    NQ_VALUE = ["00", "02"]
     HQ_VALUE = ["01", "03"]
     MYSTERY_QUALITIES = ["7C"]  # peach confetti has a 'quality' of 7C for some reason. ????????
 
@@ -49,7 +49,7 @@ class RetainerInventoryParser:
                     resettable = False
                 if match.group('quality') in self.HQ_VALUE:
                     is_high_quality = True
-                elif match.group('quality') == self.NQ_VALUE:
+                elif match.group('quality') in self.NQ_VALUE:
                     is_high_quality = False
                 elif match.group('quality') in self.MYSTERY_QUALITIES:
                     is_high_quality = False
