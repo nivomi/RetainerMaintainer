@@ -4,7 +4,7 @@ class RetainerInventoryParser:
     LANG_DE = "name_de"
     LANG_FR = "name_fr"
     NQ_VALUE = "00"
-    HQ_VALUE = "01"
+    HQ_VALUE = ["01", "03"]
     MYSTERY_QUALITIES = ["7C"]  # peach confetti has a 'quality' of 7C for some reason. ????????
     def __init__(self, logfile, lang):
         self.lang = lang
@@ -45,7 +45,7 @@ class RetainerInventoryParser:
                 if resettable:
                     current_itemlist = []
                     resettable = False
-                if match.group('quality') == self.HQ_VALUE:
+                if match.group('quality') in self.HQ_VALUE:
                     is_high_quality = True
                 elif match.group('quality') == self.NQ_VALUE:
                     is_high_quality = False
@@ -79,7 +79,6 @@ class RetainerInventoryParser:
         import json
         #  search for Armoire-compatible items
         armoire_capable = []
-
         for key, obj in json.load(open("data/armoire.json")).items():
             armoire_capable.append(obj['item'])
         itemlist_json = json.load(open("data/itemlist.json"))
@@ -100,9 +99,10 @@ class RetainerInventoryParser:
                     self.split_stack_alerts.append((owners[0][1], owners[0][2], owners))
 
         for alerty in self.armoire_alerts:
+            item_names = next(item_dict for item_dict in itemlist_json if item_dict["id"] == int(alerty['item'][0]))
             self.error_strings.append("Item <strong>{item}</strong> on <strong>{retainer}</strong> can be placed in "
                                       "the armoire.".format(retainer=alerty['retainer'],
-                                                            item=itemlist_json[int(alerty['item'][0])][self.lang]))
+                                                            item=item_names[self.lang]))
 
         for alert in self.split_stack_alerts:
             ownerstring = ""
