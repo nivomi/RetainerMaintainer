@@ -36,7 +36,7 @@ class RetainerInventoryParser:
             '\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]'
             '{8}\|[0-9A-Fa-f]{8}\|[0-9A-Fa-f]{6}(?P<quality>[0-9A-Fa-f]{2})')
         retainer_name_finder = re.compile('.*?\|.*\|003d\|(?P<retainer_name>.*?)\|')
-        reset_flag_finder = re.compile('\d*?\|.*?\|00000038\|')
+        reset_flag_finder = re.compile('\d*?\|.*?\|00000028\|')
         current_retainer = {"Name": "(Failed to detect name!)", "Itemlist": []}
         current_itemlist = []
         for line in iter(self.log.split("\\n")):
