@@ -26,6 +26,14 @@ if "file" in form:
     parser = RetainerInventoryParser(filename, lang)
 
     stringify = ""
+    if parser.unhandled_qualities:
+        x = ', '.join(parser.unhandled_qualities)
+        stringify = stringify + '<li class="is-danger">Your logfile contains item data that is unhandled in the ' \
+                                'current version of our parser. Usually, this is just because of the strange, ' \
+                                'strange ways Retainer data is stored, and doesn\t affect any results. If you\'d ' \
+                                'like, feel free to email us your ' \
+                                'logfile so that we can improve our parser. ' \
+                                'Error code: OddQual{0}</li>'.format(x)
     if parser.error_strings:
         x = parser.error_strings
         for message in x:

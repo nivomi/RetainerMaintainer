@@ -9,6 +9,7 @@ class RetainerInventoryParser:
 
     def __init__(self, logfile, lang):
         self.lang = lang
+        self.unhandled_qualities = []
         assert self.lang is self.LANG_DE or lang is self.LANG_EN or lang is self.LANG_FR or lang is self.LANG_JA
         # structure...
         # list of retainers
@@ -54,7 +55,8 @@ class RetainerInventoryParser:
                 elif match.group('quality') in self.MYSTERY_QUALITIES:
                     is_high_quality = False
                 else:
-                    raise InvalidLogError("Anomalous item quality:" + match.group("quality"))
+                    self.unhandled_qualities.append(match.group('quality'))
+                    is_high_quality = False
                 if int(match.group('quantity'), 16) > 0:
                     current_itemlist.append((int(match.group('item_id'), 16), int(match.group('quantity'), 16),
                                              is_high_quality))
